@@ -1,0 +1,6 @@
+[nodejs]
+name=NodeJS
+baseurl=https://rpm.nodesource.com/pub_5.x/el/7/$basearch
+enabled=1
+gpgcheck=0
+priority=1

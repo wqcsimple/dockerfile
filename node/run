@@ -1,0 +1,39 @@
+#!/bin/sh
+
+app_path=/opt/app/hook
+
+docker_bridge_gateway=`/sbin/ip route | awk '/docker0/ {printf $NF}'`
+
+docker_image=docker-registry.sinfere.com/sinfere/node:1.0.0
+docker_container=websocket-server
+port=7010:80
+volume=$app_path:/opt/app
+host1=db:$docker_bridge_gateway
+
+docker rm -f $docker_container
+docker run -d --restart=always --name=$docker_container --add-host=$host1 -p $port -v $volume $docker_image
+
+
+
+
+[program:app]
+command=/usr/bin/node /opt/app/app.js
+environment=NODE_ENV=production
+directory=/opt/app
+autostart=true
+autorestart=true
+stdout_events_enabled=true
+stderr_events_enabled=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+numprocs=1
+
+
+[eventlistener:stdout]
+command=supervisor_stdout
+buffer_size=100
+events=PROCESS_LOG
+result_handler=supervisor_stdout:event_handler
+
+
+docker run -d --restart=always --name='websocket-server' -p 7010:30000 -v /opt/app/hook:/opt/app -v /opt/app/hook/run.ini:/etc/supervisord.d/run.ini docker-registry.sinfere.com/sinfere/node:1.0.0

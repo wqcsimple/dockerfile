@@ -1,0 +1,6 @@
+[nginx]
+name=nginx-mainline
+baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+enabled=1
+gpgcheck=0
+priority=2

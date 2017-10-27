@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+docker_image=registry.cn-hangzhou.aliyuncs.com/whis/phpredisadmin:latest
+docker_container=pra
+port=8082:80
+
+volume=/opt/script/app/pra/config.sample.inc.php:/src/app/includes/config.sample.inc.php
+
+docker rm -f $docker_container
+
+docker run -d --restart=always \
+    --name=$docker_container \
+    -p $port \
+    -v $volume \
+    --link redis:redis \
+    $docker_image
